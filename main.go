@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/spf13/viper"
 	"github.com/zserge/lorca"
 )
 
@@ -13,9 +14,17 @@ func waitForElement(ui lorca.UI, querySelector string) bool {
 	return ui.Eval(fmt.Sprintf("!!document.querySelector(%s)", querySelector)).Bool()
 }
 
+func init() {
+	viper.SetConfigFile("config.json")
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil {             // Handle errors reading the config file
+		panic(fmt.Errorf("Fatal error config file: %s", err))
+	}
+}
+
 func main() {
 	// Create UI with basic HTML passed via data URI
-	ui, err := lorca.New("https://instaling.pl/teacher.php?page=login", "", 480, 320)
+	ui, err := lorca.New("https://instaling.pl/teacher.php?page=login", "", 800, 600)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -30,11 +39,11 @@ func main() {
 
 		time.Sleep(time.Duration(rand.Intn(10000-2000)+2000) * time.Millisecond)
 
-		ui.Eval(`
-			document.querySelector("#log_email").value = "";
-			document.querySelector("#log_password").value = "";
+		ui.Eval(fmt.Sprintf(`
+			document.querySelector("#log_email").value = "%s";
+			document.querySelector("#log_password").value = "%s";
 			document.querySelector('input[type="submit"]').click();
-		`)
+		`, viper.GetString("login"), viper.GetString("password")))
 
 		for !waitForElement(ui, `'#session_button'`) {
 		}
@@ -42,7 +51,7 @@ func main() {
 		time.Sleep(time.Duration(rand.Intn(10000-2000)+2000) * time.Millisecond)
 
 		ui.Eval(`
-		document.querySelector('#session_button').click();
+			document.querySelector('#session_button').click();
 		`)
 
 		for !waitForElement(ui, `'#start_session_button'`) && !waitForElement(ui, `'#continue_session_button'`) {
@@ -103,7 +112,7 @@ func main() {
 			return oldXHROpen.apply(this, arguments);
 			};
 
-			if(document.querySelector('#start_session_button')) {
+			if(document.querySelector('#start_session_button') && document.querySelector("#start_session_page").style.display === "block") {
 				document.querySelector('#start_session_button').click();
 			} else {
 				document.querySelector('#continue_session_button').click();
