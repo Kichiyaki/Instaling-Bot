@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	minimumWaitTime = 2000
+	minimumWaitTime = 3000
 	maximumWaitTime = 5000
 )
 
@@ -65,7 +65,6 @@ func main() {
 		}
 
 		time.Sleep(time.Duration(rand.Intn(maximumWaitTime-minimumWaitTime)+minimumWaitTime) * time.Millisecond)
-
 		ui.Eval(getMainScript())
 	}()
 
@@ -78,21 +77,21 @@ func waitForElement(ui lorca.UI, querySelector string) bool {
 
 func getMainScript() string {
 	return `
-	const wait = (amount = 0) =>
-  new Promise(resolve => setTimeout(resolve, amount));
+const wait = (amount = 0) =>
+  new Promise((resolve) => setTimeout(resolve, amount));
 
 const randomBreak = (min, max) => wait(Math.floor(Math.random() * max) + min);
 
-const writeAnswerToInput = async response => {
-  const answerInput = document.querySelector('#answer');
-  const checkButton = document.querySelector('#check');
-  const knowNewButton = document.querySelector('#know_new');
-  const dontKnowNewButton = document.querySelector('#dont_know_new');
-  const skipButton = document.querySelector('#skip');
+const writeAnswerToInput = async (response) => {
+  const answerInput = document.querySelector("#answer");
+  const checkButton = document.querySelector("#check");
+  const knowNewButton = document.querySelector("#know_new");
+  const dontKnowNewButton = document.querySelector("#dont_know_new");
+  const skipButton = document.querySelector("#skip");
   if (
     knowNewButton &&
     dontKnowNewButton &&
-    document.querySelector('#new_word_form').style.display !== 'none'
+    document.querySelector("#new_word_form").style.display !== "none"
   ) {
     await randomBreak(300, 600);
     if (Math.random() >= 0.5) {
@@ -117,21 +116,21 @@ const writeAnswerToInput = async response => {
 };
 
 const clickNextWord = async () => {
-  const nextWordButton = document.querySelector('#nextword');
+  const nextWordButton = document.querySelector("#nextword");
   nextWordButton.click();
 };
 
 const oldXHROpen = window.XMLHttpRequest.prototype.open;
-window.XMLHttpRequest.prototype.open = function(method, url) {
-  this.addEventListener('load', function() {
-    if (url.includes('generate_next_word.php')) {
+window.XMLHttpRequest.prototype.open = function (method, url) {
+  this.addEventListener("load", function () {
+    if (url.includes("generate_next_word.php")) {
       const json = JSON.parse(this.responseText);
       if (json.summary) {
         window.closeWindow();
       } else {
         writeAnswerToInput(json);
       }
-    } else if (url.includes('save_answer.php')) {
+    } else if (url.includes("save_answer.php")) {
       clickNextWord();
     }
   });
@@ -139,12 +138,14 @@ window.XMLHttpRequest.prototype.open = function(method, url) {
 };
 
 if (
-  document.querySelector('#start_session_button') &&
-  document.querySelector('#start_session_page').style.display === 'block'
+  document.querySelector("#start_session_button") &&
+  document.querySelector("#start_session_page").style.display === "block"
 ) {
-  document.querySelector('#start_session_button').click();
+  console.log("?");
+  document.querySelector("#start_session_button").click();
 } else {
-  document.querySelector('#continue_session_button').click();
+  console.log("?");
+  document.querySelector("#continue_session_button").click();
 }
 
 		`

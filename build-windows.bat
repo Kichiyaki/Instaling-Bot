@@ -1,3 +1,3 @@
 @echo off
-rm -rf bot-instaling.exe
-go build -ldflags "-H windowsgui" -o build/bot-instaling.exe
+rm -rf dist/bot-instaling.exe
+go build -ldflags "-H windowsgui" -o dist/bot-instaling.exe
