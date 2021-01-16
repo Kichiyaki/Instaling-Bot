@@ -1,3 +1,3 @@
 # Instaling.pl Bot
 
-Humanized way to solve [instaling](https://instaling.pl) vocabulary test.
+A bot that solves the [instaling.pl](https://instaling.pl) vocabulary test for you.
